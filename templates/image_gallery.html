@@ -43,6 +43,7 @@
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/view_image/{{ file_data['filename'] }}'">View</button>
                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="openDeleteConfirmationModal('{{ file_data['filename'] }}', 'card_{{ file_data['filename'] }}')">Delete</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/download_image/{{ file_data['filename'] }}'">Download</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/ndvi_view_image/{{ file_data['filename'] }}'">NDVI View</button>
                         {% if file_data['has_dng'] %}
                             <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/download_image/{{ file_data['dng_file'] }}'">Download Raw</button>
                         {% endif %}
@@ -121,7 +122,6 @@ function deleteImageFromModal() {
     .catch(error => console.error('Error deleting image:', error));
 }
 
-
 function deleteImageeee(filename, cardId) {
     console.log('Deleting image:', filename, 'Card ID:', cardId);
 
@@ -145,6 +145,7 @@ function deleteImageeee(filename, cardId) {
     })
     .catch(error => console.error('Error deleting image:', error));
 }
+
 function adjustCardHeight() {
     const cards = document.querySelectorAll('.card');
     const rowHeight = 300; // Set your desired row height
@@ -164,6 +165,7 @@ function adjustCardHeight() {
         card.style.gridRow = `span ${Math.ceil(cardHeight / rowHeight)}`;
     });
 }
+
 </script>
 
 {% endblock%}

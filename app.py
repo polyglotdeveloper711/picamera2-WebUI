@@ -3,6 +3,9 @@ from datetime import datetime
 from threading import Condition
 import threading
 import argparse
+import cv2
+import numpy as np
+from fastiecm import fastiecm
 
 
 from flask import Flask, render_template, request, jsonify, Response, send_file, abort, session
@@ -853,6 +856,39 @@ def delete_image(filename):
 def view_image(filename):
     # Pass the filename or any other necessary information to the template
     return render_template('view_image.html', filename=filename)
+
+@app.route('/ndvi_view_image/<filename>', methods=['GET'])
+def ndvi_view_image(filename):
+    # Pass the filename or any other necessary information to the template
+    image = cv2.imread(filename)
+    image = np.array(image, dtype=float)/float(255)
+
+    def contrast_stretch(im):
+        in_min = np.percentile(im, 5)
+        in_max = np.percentile(im, 95)
+
+        out_min = 0.0
+        out_max = 255.0
+
+        out = im - in_min
+        out *= ((out_min - out_max) / (in_min - in_max))
+        out += in_min
+        return out
+    
+    def calc_ndvi(image):
+        b, g, r = cv2.split(image)
+        bottom = (r.astype(float) + b.astype(float))
+        bottom[bottom==0] = 0.01
+        ndvi = (b.astype(float) - b) / bottom
+        return ndvi
+    
+    contrasted = contrast_stretch(image)
+    ndvi = calc_ndvi(contrasted)
+    ndvi_contrasted = contrast_stretch(ndvi)
+    color_mapped_prep = ndvi_contrasted.astype(np.uint8)
+    color_mapped_image = cv2.applyColorMap(color_mapped_prep, fastiecm)
+
+    return render_template('ndvi_view_image.html', filename=color_mapped_image)
 
 @app.route('/download_image/<filename>', methods=['GET'])
 def download_image(filename):
