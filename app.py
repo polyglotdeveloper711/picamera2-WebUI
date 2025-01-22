@@ -860,7 +860,8 @@ def view_image(filename):
 @app.route('/ndvi_view_image/<filename>', methods=['GET'])
 def ndvi_view_image(filename):
     # Pass the filename or any other necessary information to the template
-    image = cv2.imread(filename)
+    img = Image.open(os.path.join(UPLOAD_FOLDER, filename))
+    image = cv2.imread(img)
     image = np.array(image, dtype=float)/float(255)
 
     def contrast_stretch(im):
